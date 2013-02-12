@@ -1,3 +1,6 @@
+var pathToFM = 'ckeditor/filemanager';
+var pathToPHP = 'http://localhost/qEditor/ckeditor/filemanager/connectors/php';
+
 window.views["questionAdd"] = Backbone.View.extend({
 
 	initialize:function () {
@@ -11,7 +14,12 @@ window.views["questionAdd"] = Backbone.View.extend({
 	        'explanation'];
 	    var editor = [];
         _.each(this.list,function(item){
-        	editor[item] = CKEDITOR.replace(item);
+        	editor[item] = CKEDITOR.replace(item,
+    		{
+	            filebrowserBrowseUrl : pathToFM+'/browser/default/browser.html?Connector=' + pathToPHP + '/connector.php',
+	            filebrowserImageBrowseUrl : pathToFM + '/browser/default/browser.html?Type=Image&Connector='+pathToPHP+'/connector.php',
+	            filebrowserFlashBrowseUrl : pathToFM + '/browser/default/browser.html?Type=Flash&Connector='+pathToPHP + '/connector.php'
+            });
         });
         this.editor = editor;
     },
@@ -24,7 +32,12 @@ window.views["questionAdd"] = Backbone.View.extend({
 
     edit: function(e){
     	id = ($(e.target).attr("id")).substr(2);
-    	this.editor[id] = CKEDITOR.replace(id);
+    	this.editor[id] = CKEDITOR.replace(id,
+    		{
+	            filebrowserBrowseUrl : pathToFM+'/browser/default/browser.html?Connector=' + pathToFM + 'connectors/php/connector.php',
+	            filebrowserImageBrowseUrl : pathToFM + '/browser/default/browser.html?Type=Image&amp;Connector='+pathToFM+'/connectors/php/connector.php',
+	            filebrowserFlashBrowseUrl : pathToFM + '/browser/default/browser.html?Type=Flash&amp;Connector='+pathToFM+'/connectors/php/connector.php'
+            });
     },
 
     preview: function(e){
