@@ -1,12 +1,45 @@
 <p>Adding Question</p>
-<div class="Question"><p>Question Text:<br />
-<textarea class="ckeditor" id="text" placeholder="Question Text"></textarea></p></div>
+<button class="preview" id="p-all">Preview All</button>
+<div class="Question">
+	<p>Question Text:
+	<button class="edit" id="e-text">Edit</button>
+	<button class="preview" id="p-text">Preview</button>
+	</p><br />
+	<div class="ckeditor" id="text" placeholder="Question Text"></div>
+	</p>
+</div>
 <div id="options">
 	Options :
-	<div class="option"><span>Option 1:</span><br /><textarea class="option ckeditor" id="opt-1"></textarea></div>
-	<div class="option"><span>Option 2:</span><br /><textarea class="option ckeditor" id="opt-2"></textarea></div>
-	<div class="option"><span>Option 3:</span><br /><textarea class="option ckeditor" id="opt-3"></textarea></div>
-	<div class="option"><span>Option 4:</span><br /><textarea class="option ckeditor" id="opt-4"></textarea></div>
+	<div class="option">
+		<span>Option 1:</span><br />
+		<button class="edit" id="e-opt-1">Edit</button>
+		<button class="preview" id="p-opt-1">Preview</button>
+		<div class="option ckeditor" id="opt-1"></div>
+	</div>
+	<div class="option">
+		<span>Option 2:</span><br />
+		<button class="edit" id="e-opt-2">Edit</button>
+		<button class="preview" id="p-opt-2">Preview</button>
+		<div class="option ckeditor" id="opt-2"></div>
+	</div>
+	<div class="option">
+		<span>Option 3:</span><br />
+		<button class="edit" id="e-opt-3">Edit</button>
+		<button class="preview" id="p-opt-3">Preview</button>
+		<div class="option ckeditor" id="opt-3"></div>
+	</div>
+	<div class="option">
+		<span>Option 4:</span><br />
+		<button class="edit" id="e-opt-4">Edit</button>
+		<button class="preview" id="p-opt-4">Preview</button>
+		<div class="option ckeditor" id="opt-4"></div>
+	</div>
 </div>
-<div class="solution"><p>Solution:<br />
-<textarea class="ckeditor" id="explanation"></textarea></p></div>
+<div class="solution">
+	<p>Solution:<br />
+	<button class="edit" id="e-explanation">Edit</button>
+	<button class="preview" id="p-explanation">Preview</button>
+	<div class="ckeditor" id="explanation"></div>
+	</p>
+</div>
+<button id="submit">Submit</button>
