@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PrepSquare Question Editor</title>
+
+<script src="js/lib/jquery-1.8.3.js"></script>
+
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" href="css/bootstrap-responsive.min.css">
+ 
+<script src="js/lib/bootstrap.min.js"></script>
+<!-- The Scripts -->
+<script src="js/lib/underscore-min.js"></script>
+<script src="js/lib/backbone-min.js"></script>
+<script src="js/lib/bootstrap.min.js"></script>
+<script src="js/lib/upload.js"></script>
+<script src="ckeditor/ckeditor.js"></script>
+</head>
+<body>
+
+<div id="content">
+	
+</div>
+<script>
+
+var views = {};
+var models ={};
+
+var viewsToLoad = [
+              "questionviews",
+ 			  "landingview"
+            ];
+
+  var modelsToLoad = ["a",
+                "b"];
+
+_.each(viewsToLoad,function(item){
+  document.write('<script src="js/views/'+item+'.js"></' + 'script>');  
+});
+_.each(modelsToLoad,function(item){
+  document.write('<script src="js/models/'+item+'.js"></' + 'script>');  
+});
+</script>
+
+<script src="js/router.js"></script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+      displayAlign: "left",
+  tex2jax: {inlineMath: [["~~","~~"],["\\(","\\)"]]}
+});
+</script>
+<script type="text/javascript" src="../mathjax/MathJax.js?config=TeX-AMS_HTML-full"></script>
+</body>
+
+</html>
