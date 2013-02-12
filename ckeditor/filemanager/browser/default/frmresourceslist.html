@@ -106,7 +106,10 @@ function OpenFile( fileUrl )
 
 	//PATCH: Using CKEditors API we set the file in preview window.	
 	
-	funcNum = GetUrlParam('CKEditorFuncNum') ;			//fixed the issue: images are not displayed in preview window when filename contain spaces due encodeURI encoding already encoded fileUrl	
+	funcNum = GetUrlParam('CKEditorFuncNum') ;	
+	
+	//fixed the issue: images are not displayed in preview window when filename contain spaces due encodeURI encoding already encoded fileUrl
+
 	window.top.opener.CKEDITOR.tools.callFunction( funcNum, fileUrl);
 	
 	///////////////////////////////////

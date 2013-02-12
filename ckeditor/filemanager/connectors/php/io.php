@@ -338,8 +338,8 @@ EOF;
 	}
  
   $rpl = array( '\\' => '\\\\', '"' => '\\"' ) ;
+
   echo 'window.parent.CKEDITOR.tools.callFunction("'. $CKECallback. '","'. strtr($fileUrl, $rpl). '", "'. strtr( $msg, $rpl). '");' ; 
- 
   echo '</script>';
 }
 
