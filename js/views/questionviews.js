@@ -1,11 +1,15 @@
 var pathToFM = 'ckeditor/filemanager';
 var pathToPHP = 'http://localhost/qEditor/ckeditor/filemanager/connectors/php';
+//tanujb : change the above for php
+
+//tanub : l3id, mathjax load on preview.
 
 window.views["questionAdd"] = Backbone.View.extend({
 
 	initialize:function () {
         this.render();
 	    this.editor = [];
+	    this.prePreview = [];
 	    this.list = ['text', 'opt-1', 'opt-2', 'opt-3', 'opt-4', 'explanation'];
 	    var editor = [];
         _.each(this.list,function(item){
@@ -33,14 +37,18 @@ window.views["questionAdd"] = Backbone.View.extend({
     			var a = $("<div>");
     			a.html(data).find("img").each(function(i){
     					currentSrc = $(this).attr("src");
-    					newSrc = currentSrc.substr(12);
-    					$(this).attr("src",newSrc);
+    					if(currentSrc.substr(0,2) == "..")
+    					{
+    						newSrc = currentSrc.substr(12);
+    						$(this).attr("src",newSrc);
+    					}
     				});
     			context.editor[item].setData(a.html());
     		});
     },
     edit: function(e){
     	id = ($(e.target).attr("id")).substr(2);
+    	$('#'+id).html(this.prePreview[id]);
     	this.editor[id] = CKEDITOR.replace(id,
     		{
 	            filebrowserBrowseUrl : pathToFM+'/browser/default/browser.html?Connector=' + pathToFM + 'connectors/php/connector.php',
@@ -54,31 +62,53 @@ window.views["questionAdd"] = Backbone.View.extend({
     	var context = this;
     	if(id=="all")
     		_.each(this.list,function(item){
-    			data = context.editor[item].getData();
+    			this.prePreview[item] = context.editor[item].getData();
 	    		context.editor[item].destroy();
-	    		$(item).html(data);		
+	    		$(item).html(this.prePreview[item]);
+	    		var math = document.getElementById(item);
+         		MathJax.Hub.Queue(["Typeset", MathJax.Hub, math]);		
     		});
-		data = this.editor[id].getData();
-    	this.editor[id].destroy();
-    	$(id).html(data);
+    	else
+		{	this.prePreview[id] = this.editor[id].getData();
+	    	this.editor[id].destroy();
+	    	$(id).html(this.prePreview[id]);
+	    	var math = document.getElementById(id);
+         	MathJax.Hub.Queue(["Typeset", MathJax.Hub, math]);
+	    }
     },
 
     submit:  function(e){
-    	var data = [];
+    	var data = {};
     	var context = this;
-    	_.each(this.list,function(item){
-    		data[item] = context.editor[item].getData();
-    	});
-    	var correctAnswer = "";
+    	data["noOfOptions"] = 4;
+    	data["typeId"] = 1; //maybe 2
 
-    	for(var i =1;i<4;i++)
+		var correctAnswer = "";
+		var optionText = "";
+    	for(var i =1;i<data["noOfOptions"];i++)
+    	{	
+    		optionText += ((optionText == "")? "" : optionText +"|:") + context.editor["opt-"+i].getData();
     		if($("#cbox-opt-"+i)[0].checked)
     				correctAnswer = ((correctAnswer == "")? "" : correctAnswer +"|:") + String(i-1);
+    	}
 
-    	data["noOfOptions"] = 4;
+
+    	data["text"] = context.editor["text"].getData();
+    	data["explanation"] = context.editor["explanation"].getData();
+    	data["options"] = optionText;
     	data["correctAnswer"] = correctAnswer;
 
-    	console.log(data);
+
+    	return $.ajax({
+			type : "POST",
+			dataType : "json",
+			data : data,
+			url : 'api/question/add'
+		})
+		.done(function(data) {	
+			
+			window.alert("The server returned" + data.data );
+		});
     	//ajax call to server
     		//fix images, copy them to location with new naming.
     		//l3id,

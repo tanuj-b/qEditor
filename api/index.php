@@ -17,6 +17,7 @@ $app->get('/question/:id', 'getQuestion');
 
 // the fac pages
 $app->get('/testcode', 'testCode');
+$app->post('/question/add', 'addQuestion');
 
 //packages
 define('SUCCESS', "success"); // returns the requested data.
@@ -48,24 +49,29 @@ function phpLog($msg) {
     echo $msg;
 }
 
+function addQuestion()
+{
+    $response["data"] = doSQL(array(
+        "txt" => $_POST["text"],
+        "exp" => $_POST["explanation"],
+        "opt" => $_POST["options"],
+        "tid" => $_POST["typeId"],
+        "cor" => $_POST["correctAnswer"],
+        "SQL" => "INSERT INTO questions(text, explanation, options, correctAnswer, typeId) VALUES(:txt, :exp, :opt, :cor, :tid);SELECT id FROM questions WHERE id = LAST_INSERT_ID();"),true);
+
+    $response["status"] = SUCCESS;
+    sendResponse($response);
+}
+
+/*
 function getTopics($level, $id) {
-    $response = array();
+    
     $sql = "SELECT * from section_" . $level . " where streamId=:id";
-    try {
-        $db = getConnection();
-        $stmt = $db->prepare($sql);
         $stmt->bindParam("id", $id);
-        $stmt->execute();
         $records = $stmt->fetchAll(PDO::FETCH_OBJ);
         $db = null;
         $response["status"] = SUCCESS;
         $response["data"] = $records;
-    } catch (PDOException $e) {
-        $response["status"] = ERROR;
-        $response["data"] = EXCEPTION_MSG;
-        phpLog($e->getMessage());
-    }
-    sendResponse($response);
 }
 
 //
@@ -114,7 +120,7 @@ function getQuestions($qids) {
         phpLog($e->getMessage());
     }
 }
-
+*/
 function doSQL($params,$returnsData,$fetchAs = "obj",$callBack = ""){   /*
     $firephp = FirePHP::getInstance(true);
     $firephp->log($params, "SQL:");*/
