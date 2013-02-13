@@ -18,6 +18,7 @@ $app->get('/question/:id', 'getQuestion');
 // the fac pages
 $app->get('/testcode', 'testCode');
 $app->get('/question/add', 'addQuestion');
+$app->get('/question/:id', 'getQuestion');
 $app->post('/copyImages','copyImages');
 $app->post('/question/update', 'updateQuestion');
 
@@ -77,6 +78,18 @@ function addQuestion()
         "SQL" => "SELECT id FROM questions WHERE text=:txt;"
         ),true);
     $response["data"] = $data->id;
+    $response["status"] = SUCCESS;
+    sendResponse($response);
+}
+
+function getQuestion($id)
+{
+    $data = doSql(array(
+        "qid" => $id,
+        "SQL" => "SELECT * FROM questions WHERE id=:qid;"
+        ),true);
+
+    $response["data"] = $data;
     $response["status"] = SUCCESS;
     sendResponse($response);
 }

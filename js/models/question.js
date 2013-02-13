@@ -13,11 +13,24 @@ window.models["question"] = Backbone.Model.extend({
 	},
 
 	initialize : function (opt){
+		var context = this;
 		opt = opt || {qid: false};
 		if(opt.qid)
 		{
+			console.log("Has own qid")
 			this.set("qid", opt.qid);
-			this.fetch();
+			$.ajax({
+				type : "GET",
+				dataType : "json",
+				url : 'api/question/' + opt.qid,
+				async : false
+			}).done(function(data){
+				for(key in data.data){
+					context.set(key,data.data[key]);
+				}
+				//set number of options
+				//read correct answer
+			});
 		}
 		else{
 			var context = this;
