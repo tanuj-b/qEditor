@@ -17,7 +17,9 @@ $app->get('/question/:id', 'getQuestion');
 
 // the fac pages
 $app->get('/testcode', 'testCode');
-$app->post('/question/add', 'addQuestion');
+$app->get('/question/add', 'addQuestion');
+$app->post('/copyImages','copyImages');
+$app->post('/question/update', 'updateQuestion');
 
 //packages
 define('SUCCESS', "success"); // returns the requested data.
@@ -49,20 +51,56 @@ function phpLog($msg) {
     echo $msg;
 }
 
-function addQuestion()
+function updateQuestion()
 {
     $response["data"] = doSQL(array(
+        "qid" => $_POST["qid"],
         "txt" => $_POST["text"],
         "exp" => $_POST["explanation"],
         "opt" => $_POST["options"],
         "tid" => $_POST["typeId"],
         "cor" => $_POST["correctAnswer"],
-        "SQL" => "INSERT INTO questions(text, explanation, options, correctAnswer, typeId) VALUES(:txt, :exp, :opt, :cor, :tid);SELECT id FROM questions WHERE id = LAST_INSERT_ID();"),true);
+        "SQL" => "UPDATE questions SET text = :txt, explanation = :exp, options = :opt, correctAnswer =:cor, typeId = :tid WHERE id = :qid"),false);
 
     $response["status"] = SUCCESS;
     sendResponse($response);
 }
 
+function addQuestion()
+{
+    $rand = "a" . rand();
+    doSQL(array(
+        "txt" => $rand,
+        "SQL" => "INSERT INTO questions(text) VALUES(:txt);"),false);
+     $data = doSql(array(
+        "txt" => $rand,
+        "SQL" => "SELECT id FROM questions WHERE text=:txt;"
+        ),true);
+    $response["data"] = $data->id;
+    $response["status"] = SUCCESS;
+    sendResponse($response);
+}
+
+function copyImages()
+{   
+    $adjustPath = "../";
+    foreach ($_POST["oldSrc"] as $key => $oldSrc)
+        shell_exec("cp ".$adjustPath.$oldSrc." ".$adjustPath.$_POST["newSrc"][$key]);
+
+    $response["data"] = true;
+    $response["status"] = SUCCESS;
+    sendResponse($response);
+}
+
+function stream_copy($src, $dest) 
+{ 
+    $fsrc = fopen($src,'r'); 
+    $fdest = fopen($dest,'w+'); 
+    $len = stream_copy_to_stream($fsrc,$fdest); 
+    fclose($fsrc);
+    fclose($fdest);
+    return $len; 
+} 
 /*
 function getTopics($level, $id) {
     
@@ -147,6 +185,5 @@ function doSQL($params,$returnsData,$fetchAs = "obj",$callBack = ""){   /*
     }
 }
 include 'xkcd.php';
-include 'analytics.php';
 
 $app->run();

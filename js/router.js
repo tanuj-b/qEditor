@@ -15,10 +15,10 @@ var AppRouter = Backbone.Router.extend({
 	},
 
 	addQuestion : function(){
-		this.loadView("questionAdd","questionAdd");
-		
+		var question = new models["question"]();
+		this.loadView("questionAdd","questionAdd", {model : question });
 	},
-	loadView : function(view,templateFile){
+	loadView : function(view,templateFile,options){
 		return $.ajax({
 			type : "GET",
 			dataType : "html",
@@ -27,7 +27,9 @@ var AppRouter = Backbone.Router.extend({
 		})
 		.done(function(data) {	
 			window.views[view].prototype.template = _.template(data);
-			window.currentView = new views[view]({el : $("#content")});
+			options = options || {};
+			options.el = $("#content");
+			window.currentView = new views[view](options);
 		});
 	}
 

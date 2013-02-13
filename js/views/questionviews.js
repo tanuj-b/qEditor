@@ -1,17 +1,19 @@
 var pathToFM = 'ckeditor/filemanager';
 var pathToPHP = 'http://localhost/qEditor/ckeditor/filemanager/connectors/php';
+var pathToFinalImages = 'api/resources/questions'; // this will have to be fixed.
 //tanujb : change the above for php
 
-//tanub : l3id, mathjax load on preview.
+//tanub : l3id.
 
 window.views["questionAdd"] = Backbone.View.extend({
 
 	initialize:function () {
         this.render();
-	    this.editor = [];
+	    this.editors = [];
 	    this.prePreview = [];
 	    this.list = ['text', 'opt-1', 'opt-2', 'opt-3', 'opt-4', 'explanation'];
 	    var editor = [];
+
         _.each(this.list,function(item){
         	editor[item] = CKEDITOR.replace(item,
     		{
@@ -21,6 +23,7 @@ window.views["questionAdd"] = Backbone.View.extend({
             });
         });
         this.editor = editor;
+        //this.model.set('editors', editor);
     },
 
     events: {
@@ -46,6 +49,40 @@ window.views["questionAdd"] = Backbone.View.extend({
     			context.editor[item].setData(a.html());
     		});
     },
+
+    copyImages : function(){
+    	var context = this;
+    	context.fixImages();
+    	var srcMap = {
+    		oldSrc : [],
+    		newSrc : []
+    	};
+    	var i = 0;
+    	_.each(this.list,function(item){
+    			data = context.editor[item].getData();
+    			var a = $("<div>");
+    			a.html(data).find("img").each(function(r){
+    					srcMap.oldSrc[i] = $(this).attr("src");
+    					var extension = $(this).attr("src").substr(-3);
+    					extension = (extension == "peg") ? "jpeg" : extension;
+  						srcMap.newSrc[i] = pathToFinalImages + "/q" 
+  						+ context.model.get("qid") + "img" + (i + 1) + "." + extension;
+  						i += 1;
+    				});
+    		});
+    	console.log("Source Map looks like this :");
+    	console.log(srcMap);
+    	$.ajax({
+			type : "POST",
+			dataType : "json",
+			data : srcMap,
+			url : 'api/copyImages'
+		})
+		.done(function(data) {	
+			
+		})
+    },
+
     edit: function(e){
     	id = ($(e.target).attr("id")).substr(2);
     	$('#'+id).html(this.prePreview[id]);
@@ -62,16 +99,16 @@ window.views["questionAdd"] = Backbone.View.extend({
     	var context = this;
     	if(id=="all")
     		_.each(this.list,function(item){
-    			this.prePreview[item] = context.editor[item].getData();
+    			context.prePreview[item] = context.editor[item].getData();
 	    		context.editor[item].destroy();
-	    		$(item).html(this.prePreview[item]);
+	    		$(this).html(context.prePreview[item]);
 	    		var math = document.getElementById(item);
          		MathJax.Hub.Queue(["Typeset", MathJax.Hub, math]);		
     		});
     	else
-		{	this.prePreview[id] = this.editor[id].getData();
-	    	this.editor[id].destroy();
-	    	$(id).html(this.prePreview[id]);
+		{	context.prePreview[id] = context.editor[id].getData();
+	    	context.editor[id].destroy();
+	    	$(id).html(context.prePreview[id]);
 	    	var math = document.getElementById(id);
          	MathJax.Hub.Queue(["Typeset", MathJax.Hub, math]);
 	    }
@@ -80,30 +117,30 @@ window.views["questionAdd"] = Backbone.View.extend({
     submit:  function(e){
     	var data = {};
     	var context = this;
-    	data["noOfOptions"] = 4;
-    	data["typeId"] = 1; //maybe 2
+    	this.model.set("noOfOptions",4);
+    	this.model.set("typeId",1); //maybe 2
 
 		var correctAnswer = "";
 		var optionText = "";
-    	for(var i =1;i<data["noOfOptions"];i++)
+    	for(var i =1;i<=this.model.get("noOfOptions");i++)
     	{	
     		optionText += ((optionText == "")? "" : optionText +"|:") + context.editor["opt-"+i].getData();
     		if($("#cbox-opt-"+i)[0].checked)
     				correctAnswer = ((correctAnswer == "")? "" : correctAnswer +"|:") + String(i-1);
     	}
+    	this.model.set("text",context.editor["text"].getData());
+    	this.model.set("explanation",context.editor["explanation"].getData());
+    	this.model.set("options",optionText);
+    	this.model.set("correctAnswer",correctAnswer);
 
 
-    	data["text"] = context.editor["text"].getData();
-    	data["explanation"] = context.editor["explanation"].getData();
-    	data["options"] = optionText;
-    	data["correctAnswer"] = correctAnswer;
+		this.copyImages();
 
-
-    	return $.ajax({
+		return $.ajax({
 			type : "POST",
 			dataType : "json",
-			data : data,
-			url : 'api/question/add'
+			data : this.model.toJSON(),
+			url : 'api/question/update'
 		})
 		.done(function(data) {	
 			
@@ -115,7 +152,7 @@ window.views["questionAdd"] = Backbone.View.extend({
     },
 
     render:function () {
-        $(this.el).html(this.template());
+        $(this.el).html(this.template(this.model.toJSON()));
         return this;
     }
 });

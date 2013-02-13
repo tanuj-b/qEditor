@@ -6,18 +6,23 @@
 	<button class="edit" id="e-text">Edit</button>
 	<button class="preview" id="p-text">Preview</button>
 	</p><br />
-	<div class="ckeditor" id="text" placeholder="Question Text"></div>
+	<div class="ckeditor" id="text" placeholder="Question Text"><%= text %></div>
 	</p>
 </div>
 <div id="options">
 	Options :
+	
+	<% for(i=1; i<= noOfOptions; i++) { %>
 	<div class="option">
-		<input type="checkbox" id="cbox-opt-1">
-		<span>Option 1:</span><br />
-		<button class="edit" id="e-opt-1">Edit</button>
-		<button class="preview" id="p-opt-1">Preview</button>
-		<div class="option ckeditor" id="opt-1"></div>
+		<input type="checkbox" id="cbox-opt-<%=i%>">
+		<span>Option <%=i%>:</span><br />
+		<button class="edit" id="e-opt-<%=i%>">Edit</button>
+		<button class="preview" id="p-opt-<%=i%>">Preview</button>
+		<div class="option ckeditor" id="opt-<%=i%>"><%= options.split("|:")[(i-1)]%></div>
 	</div>
+	<% } %>
+
+<!--
 	<div class="option">
 		<input type="checkbox" id="cbox-opt-2">
 		<span>Option 2:</span><br />
@@ -39,12 +44,13 @@
 		<button class="preview" id="p-opt-4">Preview</button>
 		<div class="option ckeditor" id="opt-4"></div>
 	</div>
+-->
 </div>
 <div class="solution">
 	<p>Solution:<br />
 	<button class="edit" id="e-explanation">Edit</button>
 	<button class="preview" id="p-explanation">Preview</button>
-	<div class="ckeditor" id="explanation"></div>
+	<div class="ckeditor" id="explanation"><%= explanation %></div>
 	</p>
 </div>
 <button id="submit">Submit</button>
