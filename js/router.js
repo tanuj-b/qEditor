@@ -4,7 +4,8 @@ var AppRouter = Backbone.Router.extend({
 		"" : "landing",
 		"questions/add" : "addQuestion",
 		"questions/edit" : "editQSelect",
-		"questions/edit/:qid" : "editQuestion"
+		"questions/edit/:qid" : "editQuestion",
+		"questions/reveal/:qid" : "revealForQuestion"
 	},
 
 	initialize : function() {
@@ -28,6 +29,12 @@ var AppRouter = Backbone.Router.extend({
 		var id = $("#e-qid").attr("value");
 		window.location = '#questions/edit/' +id;
 	},
+
+	revealForQuestion : function(qid){
+		var question = new models["question"]({qid: qid});
+		this.loadView("revealQ","revealQ",{model: question});
+	},
+
 	loadView : function(view,templateFile,options){
 		return $.ajax({
 			type : "GET",
