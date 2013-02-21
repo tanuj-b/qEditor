@@ -21,11 +21,11 @@ var AppRouter = Backbone.Router.extend({
 
 	addQuestion : function(){
 		var question = new models["question"]();
-		this.loadView("questionAdd","questionAdd", {model : question });
+		this.loadView("question","question", {model : question });
 	},
 	editQuestion : function(qid){
 		var question = new models["question"]({qid: qid});
-		this.loadView("questionAdd","questionAdd", {model : question });
+		this.loadView("question","question", {model : question });
 	},
 	editQSelect : function(){
 		var id = $("#e-qid").attr("value");

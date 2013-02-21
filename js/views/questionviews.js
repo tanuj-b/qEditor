@@ -1,6 +1,6 @@
 //tanub : l3id.
 
-window.views["questionAdd"] = Backbone.View.extend({
+window.views["question"] = Backbone.View.extend({
 
 	initialize:function () {
         this.render();
