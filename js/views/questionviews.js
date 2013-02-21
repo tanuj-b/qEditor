@@ -1,8 +1,3 @@
-var pathToFM = 'ckeditor/filemanager';
-var pathToPHP = 'http://localhost/qEditor/ckeditor/filemanager/connectors/php';
-var pathToFinalImages = 'api/resources/questions'; // this will have to be fixed.
-//tanujb : change the above for php
-
 //tanub : l3id.
 
 window.views["questionAdd"] = Backbone.View.extend({
@@ -30,9 +25,9 @@ window.views["questionAdd"] = Backbone.View.extend({
         'click .edit': 'edit',
         'click .preview': 'preview',
         'click #submit' : 'submit',
-        'click #fiximg' : 'fixImages'
+        //'click #fiximg' : 'fixImages'
     },
-
+/*
     fixImages : function(){
     	var context = this;
     	_.each(this.list,function(item){
@@ -49,10 +44,10 @@ window.views["questionAdd"] = Backbone.View.extend({
     			context.editor[item].setData(a.html());
     		});
     },
-
+*/
     copyImages : function(){
     	var context = this;
-    	context.fixImages();
+    	//context.fixImages();
     	var srcMap = {
     		oldSrc : [],
     		newSrc : []
@@ -67,20 +62,25 @@ window.views["questionAdd"] = Backbone.View.extend({
     					extension = (extension == "peg") ? "jpeg" : extension;
   						srcMap.newSrc[i] = pathToFinalImages + "/q" 
   						+ context.model.get("qid") + "img" + (i + 1) + "." + extension;
+                        $(this).attr("src",srcMap.newSrc[i]);
   						i += 1;
     				});
+                context.editor[item].setData(a.html());
     		});
     	console.log("Source Map looks like this :");
     	console.log(srcMap);
-    	$.ajax({
-			type : "POST",
-			dataType : "json",
-			data : srcMap,
-			url : 'api/copyImages'
-		})
-		.done(function(data) {	
-			
-		})
+        if(i>0)
+    	   $.ajax({
+    			type : "POST",
+    			dataType : "json",
+    			data : srcMap,
+    			url : '../api/copyImages'
+    		})
+    		.done(function(data) {	
+    			_.each(this.list,function(item){
+                    context.editor[item].setData(context.editor[item].getData());
+                });
+    		});
     },
 
     edit: function(e){
@@ -118,8 +118,7 @@ window.views["questionAdd"] = Backbone.View.extend({
     	var data = {};
     	var context = this;
     	this.model.set("noOfOptions",4);
-    	this.model.set("typeId",1); //maybe 2
-
+        this.model.set("paraId",$("#paraid").attr("value"));
 		var correctAnswer = "";
 		var optionText = "";
     	for(var i =1;i<=this.model.get("noOfOptions");i++)
@@ -128,6 +127,12 @@ window.views["questionAdd"] = Backbone.View.extend({
     		if($("#cbox-opt-"+i)[0].checked)
     				correctAnswer = ((correctAnswer == "")? "" : correctAnswer +"|:") + String(i-1);
     	}
+
+        if(correctAnswer.split("|:").length == 1)
+            this.model.set("typeId",1);
+        else
+            this.model.set("typeId",2);
+
     	this.model.set("text",context.editor["text"].getData());
     	this.model.set("explanation",context.editor["explanation"].getData());
     	this.model.set("options",optionText);
@@ -140,11 +145,10 @@ window.views["questionAdd"] = Backbone.View.extend({
 			type : "POST",
 			dataType : "json",
 			data : this.model.toJSON(),
-			url : 'api/question/update'
+			url : '../api/updatequestion'
 		})
 		.done(function(data) {	
 			
-			window.alert("The server returned" + data.data );
 		});
     	//ajax call to server
     		//fix images, copy them to location with new naming.
@@ -153,30 +157,6 @@ window.views["questionAdd"] = Backbone.View.extend({
 
     render:function () {
         $(this.el).html(this.template(this.model.toJSON()));
-        return this;
-    }
-});
-
-window.views["questionEdit"] = Backbone.View.extend({
-
-	defaults : {
-	},
-
-
-	initialize:function () {
-        this.render();
-    },
-
-    events: {
-        'click #submit': 'submit'
-    },
-
-    submit: function(){
-
-    },
-
-    render:function () {
-        $(this.el).html(this.template());
         return this;
     }
 });

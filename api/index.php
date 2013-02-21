@@ -17,10 +17,17 @@ $app->get('/question/:id', 'getQuestion');
 
 // the fac pages
 $app->get('/testcode', 'testCode');
-$app->get('/question/add', 'addQuestion');
-$app->get('/question/:id', 'getQuestion');
+
+$app->get('/getquestion/:id', 'getQuestion');
+$app->get('/addquestion', 'addQuestion');
+$app->post('/updatequestion', 'updateQuestion');
+
+$app->get('/getpara/:id', 'getPara');
+$app->get('/addpara', 'addPara');
+$app->post('/updatepara', 'updatePara');
+
 $app->post('/copyImages','copyImages');
-$app->post('/question/update', 'updateQuestion');
+$app->get('/thumbnails/:quizid', 'generateThumbs');
 
 //packages
 define('SUCCESS', "success"); // returns the requested data.
@@ -54,7 +61,7 @@ function phpLog($msg) {
 
 function updateQuestion()
 {
-    $response["data"] = doSQL(array(
+    doSQL(array(
         "qid" => $_POST["qid"],
         "txt" => $_POST["text"],
         "exp" => $_POST["explanation"],
@@ -73,7 +80,8 @@ function addQuestion()
     doSQL(array(
         "txt" => $rand,
         "SQL" => "INSERT INTO questions(text) VALUES(:txt);"),false);
-     $data = doSql(array(
+
+    $data = doSql(array(
         "txt" => $rand,
         "SQL" => "SELECT id FROM questions WHERE text=:txt;"
         ),true);
@@ -94,11 +102,50 @@ function getQuestion($id)
     sendResponse($response);
 }
 
+function updatePara()
+{
+    doSQL(array(
+        "pid" => $_POST["pid"],
+        "txt" => $_POST["text"],
+        "SQL" => "UPDATE para SET text = :txt WHERE id = :pid"),false);
+
+    $response["status"] = SUCCESS;
+    sendResponse($response);
+}
+
+function addPara()
+{
+    $rand = "a" . rand();
+    doSQL(array(
+        "txt" => $rand,
+        "SQL" => "INSERT INTO para(text) VALUES(:txt);"),false);
+
+    $data = doSql(array(
+        "txt" => $rand,
+        "SQL" => "SELECT id FROM para WHERE text=:txt;"
+        ),true);
+    $response["data"] = $data->id;
+    $response["status"] = SUCCESS;
+    sendResponse($response);
+}
+
+function getPara($id)
+{
+    $data = doSql(array(
+        "pid" => $id,
+        "SQL" => "SELECT * FROM para WHERE id=:pid;"
+        ),true);
+
+    $response["data"] = $data;
+    $response["status"] = SUCCESS;
+    sendResponse($response);
+}
+
 function copyImages()
 {   
-    $adjustPath = "../";
+    $adjustPath = "";
     foreach ($_POST["oldSrc"] as $key => $oldSrc)
-        shell_exec("cp ".$adjustPath.$oldSrc." ".$adjustPath.$_POST["newSrc"][$key]);
+        shell_exec("mv ".$adjustPath.$oldSrc." ".$adjustPath.$_POST["newSrc"][$key]);
 
     $response["data"] = true;
     $response["status"] = SUCCESS;
@@ -193,10 +240,12 @@ function doSQL($params,$returnsData,$fetchAs = "obj",$callBack = ""){   /*
                 return $stmt->fetchAll(PDO::FETCH_FUNC,$callBack);
     }
     catch (PDOException $e) {
+        var_dump($e);
         //phpLog("doSqlError:".$sql.$e->getMessage());
         //echo("doSqlError:".$sql.$e->getMessage());
     }
 }
 include 'xkcd.php';
+include 'thumbnails.php';
 
 $app->run();

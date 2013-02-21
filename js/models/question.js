@@ -9,7 +9,8 @@ window.models["question"] = Backbone.Model.extend({
 		'options' : "Option A Text|:Option B Text|:Option C Text|:Option D Text",
 		'correctAnswer' : 0,
 		'explanation' : "Explanation Text here",
-		'noOfOptions' : 4
+		'noOfOptions' : 4,
+		'paraId' : null
 	},
 
 	initialize : function (opt){
@@ -22,7 +23,7 @@ window.models["question"] = Backbone.Model.extend({
 			$.ajax({
 				type : "GET",
 				dataType : "json",
-				url : 'api/question/' + opt.qid,
+				url : '../api/getquestion/' + opt.qid,
 				async : false
 			}).done(function(data){
 				for(key in data.data){
@@ -46,7 +47,7 @@ window.models["question"] = Backbone.Model.extend({
 		return $.ajax({
 			type : "GET",
 			dataType : "json",
-			url : 'api/question/add',
+			url : '../api/addquestion',
 			async : false 
 		});
 		

@@ -29,11 +29,12 @@ var models ={};
 var viewsToLoad = [
               "questionviews",
  			  "landingview",
+ 			  "paraview",
  			  "revealQ"
             ];
 
   var modelsToLoad = ["question",
-                "b"];
+                "para"];
 
 _.each(viewsToLoad,function(item){
   document.write('<script src="js/views/'+item+'.js"></' + 'script>');  
@@ -43,6 +44,7 @@ _.each(modelsToLoad,function(item){
 });
 </script>
 
+<script src="js/config.js"></script>
 <script src="js/router.js"></script>
 
 <script type="text/x-mathjax-config">
