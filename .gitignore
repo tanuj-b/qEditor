@@ -1,1 +1,3 @@
+.gitignore
+api/xkcd.php
 ckeditor/filemanager/connectors/php/config.php
